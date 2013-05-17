@@ -6,8 +6,11 @@
 namespace EventBand\Adapter\Symfony\Tests;
 
 use EventBand\Adapter\Symfony\BandEventDispatcher;
+use EventBand\Adapter\Symfony\ListenerSubscription;
 use EventBand\Adapter\Symfony\SymfonyEventWrapper;
+use EventBand\Subscription;
 use PHPUnit_Framework_TestCase as TestCase;
+use Symfony\Component\EventDispatcher\Event as SymfonyEvent;
 
 /**
  * Class BandEventDispatcherTest
@@ -148,5 +151,46 @@ class BandEventDispatcherTest extends TestCase
 
         $this->bandDispatcher->subscribe($subscription, 10);
         $this->bandDispatcher->unsubscribe($subscription);
+    }
+
+    /**
+     * @test getSubscriptions returns iterator with subscriptions
+     */
+    public function subscriptionIterator()
+    {
+        $subscription1 = $this->getMock('EventBand\Subscription');
+        $subscription2 = $this->getMock('EventBand\Subscription');
+
+        $this->bandDispatcher->subscribe($subscription1);
+        $this->bandDispatcher->subscribe($subscription2);
+
+        $subscriptions = $this->bandDispatcher->getSubscriptions();
+        $this->assertInstanceOf('Iterator', $subscriptions);
+        $this->assertCount(2, $subscriptions);
+
+        $this->assertContains($subscription1, $subscriptions);
+        $this->assertContains($subscription2, $subscriptions);
+    }
+
+    /**
+     * @test addListener adds subscription
+     */
+    public function addListenerSubscription()
+    {
+        $listener = function (SymfonyEvent $event) {};
+        $this->bandDispatcher->addListener('event.name', $listener, 100);
+
+        $subscriptions = $this->bandDispatcher->getSubscriptions();
+        $subscriptions = iterator_to_array($subscriptions);
+
+        $this->assertCount(1, $subscriptions);
+
+        /** @var ListenerSubscription $subscription */
+        $subscription = current($subscriptions);
+        $this->assertInstanceOf('EventBand\Adapter\Symfony\ListenerSubscription', $subscription);
+        $this->assertEquals('event.name', $subscription->getEventName());
+        $this->assertNull($subscription->getBand());
+        $this->assertSame($listener, $subscription->getListener());
+        $this->assertSame($this->eventDispatcher, $subscription->getEventDispatcher());
     }
 }

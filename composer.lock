@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "fc3f741c700c534d0f6e33bd76de091e",
+    "hash": "e55e37049530d81abefeb9ae0e0ce935",
     "packages": [
         {
             "name": "che/console-signals",
@@ -56,18 +56,26 @@
             "time": "2013-05-13 16:14:40"
         },
         {
-            "name": "event-band/framework",
-            "version": "dev-abstaction",
+            "name": "event-band/band-framework",
+            "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "/Users/chebba/Dropbox/Projects/EventBand",
-                "reference": "28f074c246dfdb10439fe7060412581f104de224"
+                "url": "https://github.com/chEbba/EventBand.git",
+                "reference": "be1450df870de6deb8b91f84b03680d66a1ac832"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/chEbba/EventBand/zipball/be1450df870de6deb8b91f84b03680d66a1ac832",
+                "reference": "be1450df870de6deb8b91f84b03680d66a1ac832",
+                "shasum": ""
             },
             "require": {
-                "php": ">=5.4.1"
+                "php": ">=5.4.1",
+                "symfony/property-access": "2.*"
             },
             "require-dev": {
-                "phpunit/phpunit": "3.7.*"
+                "phpunit/phpunit": "3.7.*",
+                "symfony/property-access": "2.2.0"
             },
             "type": "library",
             "autoload": {
@@ -75,6 +83,7 @@
                     "EventBand": "src/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -95,7 +104,7 @@
                 "message",
                 "queue"
             ],
-            "time": "2013-05-15 12:06:06"
+            "time": "2013-05-17 15:17:50"
         },
         {
             "name": "symfony/console",
@@ -197,9 +206,112 @@
             "description": "Symfony EventDispatcher Component",
             "homepage": "http://symfony.com",
             "time": "2012-08-22 06:48:41"
+        },
+        {
+            "name": "symfony/property-access",
+            "version": "v2.2.1",
+            "target-dir": "Symfony/Component/PropertyAccess",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/PropertyAccess.git",
+                "reference": "v2.2.1"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/PropertyAccess/zipball/v2.2.1",
+                "reference": "v2.2.1",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.3"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.2-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Symfony\\Component\\PropertyAccess\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "http://symfony.com/contributors"
+                }
+            ],
+            "description": "Symfony PropertyAccess Component",
+            "homepage": "http://symfony.com",
+            "keywords": [
+                "access",
+                "array",
+                "extraction",
+                "index",
+                "injection",
+                "object",
+                "property",
+                "property path",
+                "reflection"
+            ],
+            "time": "2013-03-28 15:37:15"
         }
     ],
     "packages-dev": [
+        {
+            "name": "jmikola/wildcard-event-dispatcher",
+            "version": "v1.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/jmikola/WildcardEventDispatcher.git",
+                "reference": "v1.0.1"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/jmikola/WildcardEventDispatcher/zipball/v1.0.1",
+                "reference": "v1.0.1",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.2",
+                "symfony/event-dispatcher": ">=2.0.0,<2.3-dev"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Jmikola": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jeremy Mikola",
+                    "email": "jmikola@gmail.com",
+                    "homepage": "http://jmikola.net"
+                }
+            ],
+            "description": "Event dispatcher with support for wildcard patterns inspired by AMQP topic exchanges.",
+            "homepage": "https://github.com/jmikola/WildcardEventDispatcher",
+            "keywords": [
+                "AMQP",
+                "dispatcher",
+                "event",
+                "event dispatcher"
+            ],
+            "time": "2013-02-26 19:21:37"
+        },
         {
             "name": "phpunit/php-code-coverage",
             "version": "1.2.9",
@@ -607,11 +719,11 @@
     ],
     "minimum-stability": "stable",
     "stability-flags": {
-        "event-band/framework": 20,
+        "event-band/band-framework": 20,
         "che/console-signals": 20
     },
     "platform": {
-        "php": ">=5.4.1"
+        "php": ">= 5.4"
     },
     "platform-dev": [
 
