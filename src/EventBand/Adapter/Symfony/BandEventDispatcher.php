@@ -8,6 +8,7 @@ namespace EventBand\Adapter\Symfony;
 use EventBand\BandDispatcher;
 use EventBand\Event;
 use EventBand\Subscription;
+use Symfony\Component\EventDispatcher\Event as SymfonyEvent;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
@@ -37,10 +38,10 @@ class BandEventDispatcher implements BandDispatcher
     {
         $eventName = $this->getBandEventName($event->getName(), $band);
 
-        $wrapper = new SymfonyEventWrapper($event);
-        $this->eventDispatcher->dispatch($eventName, $wrapper);
+        $symfonyEvent = $event instanceof SymfonyEvent ? $event : new SymfonyEventWrapper($event);
+        $this->eventDispatcher->dispatch($eventName, $symfonyEvent);
 
-        return !$wrapper->isPropagationStopped();
+        return !$symfonyEvent->isPropagationStopped();
     }
 
     /**
