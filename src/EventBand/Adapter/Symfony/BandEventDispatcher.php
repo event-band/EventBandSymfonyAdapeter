@@ -158,6 +158,7 @@ class BandEventDispatcher implements EventDispatcherInterface, BandDispatcher
      */
     public function getSubscriptions()
     {
+        // TODO: sync with internal
         return new \ArrayIterator(iterator_to_array($this->subscriptions));
     }
 
@@ -166,7 +167,6 @@ class BandEventDispatcher implements EventDispatcherInterface, BandDispatcher
      */
     public function getListeners($eventName = null)
     {
-        // TODO: sync with internal
         return $this->eventDispatcher->getListeners($eventName);
     }
 
