@@ -11,7 +11,6 @@ use EventBand\Subscription;
 use Symfony\Component\EventDispatcher\Event as SymfonyEvent;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\PropertyAccess\Exception\OutOfBoundsException;
 
 /**
  * Class BandEventDispatcher
@@ -144,8 +143,8 @@ class BandEventDispatcher implements EventDispatcherInterface, BandDispatcher
      */
     protected function findListenerSubscription(callable $listener)
     {
-        foreach ($this->subscriptions as $subscription => $listenerData) {
-            if ($listenerData[0] === $listener) {
+        foreach ($this->subscriptions as $subscription) {
+            if ($this->subscriptions->getInfo()[0] === $listener) {
                 return $subscription;
             }
         }
@@ -177,7 +176,7 @@ class BandEventDispatcher implements EventDispatcherInterface, BandDispatcher
     {
         // TODO: sync with internal
         if (!$this->subscriptions->contains($subscription)) {
-            throw new OutOfBoundsException('Subscription does not exists');
+            throw new \OutOfBoundsException('Subscription does not exists');
         }
 
         return $this->subscriptions->offsetGet($subscription)[1];

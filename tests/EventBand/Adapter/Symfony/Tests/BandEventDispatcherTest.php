@@ -173,9 +173,9 @@ class BandEventDispatcherTest extends TestCase
     }
 
     /**
-     * @test addListener adds subscription
+     * @test addListener adds subscription and removeListener removes it
      */
-    public function addListenerSubscription()
+    public function listenerSubscription()
     {
         $listener = function (SymfonyEvent $event) {};
         $this->bandDispatcher->addListener('event.name', $listener, 100);
@@ -192,5 +192,50 @@ class BandEventDispatcherTest extends TestCase
         $this->assertNull($subscription->getBand());
         $this->assertSame($listener, $subscription->getListener());
         $this->assertSame($this->eventDispatcher, $subscription->getEventDispatcher());
+
+        $this->eventDispatcher
+            ->expects($this->once())
+            ->method('removeListener')
+            ->with('event.name', $listener)
+        ;
+
+        $this->bandDispatcher->removeListener('event.name', $listener);
+
+        $this->assertCount(0, $this->bandDispatcher->getSubscriptions());
+    }
+
+    /**
+     * @test getSubscriptionPriority returns priority
+     */
+    public function subscriptionPriority()
+    {
+        $subscription = $this->getMock('EventBand\Subscription');
+        $this->bandDispatcher->subscribe($subscription, 666);
+
+        $this->assertEquals(666, $this->bandDispatcher->getSubscriptionPriority($subscription));
+    }
+
+    /**
+     * @test getSubscriptionPriority throws and exception
+     * @expectedException OutOfBoundsException
+     */
+    public function unknownSubscriptionPriority()
+    {
+        $this->bandDispatcher->getSubscriptionPriority($this->getMock('EventBand\Subscription'));
+    }
+
+    /**
+     * @test hasListener proxy to internal dispatcher
+     */
+    public function proxyHasListener()
+    {
+        $this->eventDispatcher
+            ->expects($this->once())
+            ->method('hasListeners')
+            ->with('event.name')
+            ->will($this->returnValue(true))
+        ;
+
+        $this->assertTrue($this->bandDispatcher->hasListeners('event.name'));
     }
 }
