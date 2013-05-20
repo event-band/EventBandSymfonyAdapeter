@@ -6,8 +6,11 @@
 namespace EventBand\Adapter\Symfony\Tests;
 
 use EventBand\Adapter\Symfony\BandEventDispatcher;
+use EventBand\Adapter\Symfony\ListenerSubscription;
 use EventBand\Adapter\Symfony\SymfonyEventWrapper;
+use EventBand\Subscription;
 use PHPUnit_Framework_TestCase as TestCase;
+use Symfony\Component\EventDispatcher\Event as SymfonyEvent;
 
 /**
  * Class BandEventDispatcherTest
@@ -148,5 +151,91 @@ class BandEventDispatcherTest extends TestCase
 
         $this->bandDispatcher->subscribe($subscription, 10);
         $this->bandDispatcher->unsubscribe($subscription);
+    }
+
+    /**
+     * @test getSubscriptions returns iterator with subscriptions
+     */
+    public function subscriptionIterator()
+    {
+        $subscription1 = $this->getMock('EventBand\Subscription');
+        $subscription2 = $this->getMock('EventBand\Subscription');
+
+        $this->bandDispatcher->subscribe($subscription1);
+        $this->bandDispatcher->subscribe($subscription2);
+
+        $subscriptions = $this->bandDispatcher->getSubscriptions();
+        $this->assertInstanceOf('Iterator', $subscriptions);
+        $this->assertCount(2, $subscriptions);
+
+        $this->assertContains($subscription1, $subscriptions);
+        $this->assertContains($subscription2, $subscriptions);
+    }
+
+    /**
+     * @test addListener adds subscription and removeListener removes it
+     */
+    public function listenerSubscription()
+    {
+        $listener = function (SymfonyEvent $event) {};
+        $this->bandDispatcher->addListener('event.name', $listener, 100);
+
+        $subscriptions = $this->bandDispatcher->getSubscriptions();
+        $subscriptions = iterator_to_array($subscriptions);
+
+        $this->assertCount(1, $subscriptions);
+
+        /** @var ListenerSubscription $subscription */
+        $subscription = current($subscriptions);
+        $this->assertInstanceOf('EventBand\Adapter\Symfony\ListenerSubscription', $subscription);
+        $this->assertEquals('event.name', $subscription->getEventName());
+        $this->assertNull($subscription->getBand());
+        $this->assertSame($listener, $subscription->getListener());
+        $this->assertSame($this->eventDispatcher, $subscription->getEventDispatcher());
+
+        $this->eventDispatcher
+            ->expects($this->once())
+            ->method('removeListener')
+            ->with('event.name', $listener)
+        ;
+
+        $this->bandDispatcher->removeListener('event.name', $listener);
+
+        $this->assertCount(0, $this->bandDispatcher->getSubscriptions());
+    }
+
+    /**
+     * @test getSubscriptionPriority returns priority
+     */
+    public function subscriptionPriority()
+    {
+        $subscription = $this->getMock('EventBand\Subscription');
+        $this->bandDispatcher->subscribe($subscription, 666);
+
+        $this->assertEquals(666, $this->bandDispatcher->getSubscriptionPriority($subscription));
+    }
+
+    /**
+     * @test getSubscriptionPriority throws and exception
+     * @expectedException OutOfBoundsException
+     */
+    public function unknownSubscriptionPriority()
+    {
+        $this->bandDispatcher->getSubscriptionPriority($this->getMock('EventBand\Subscription'));
+    }
+
+    /**
+     * @test hasListener proxy to internal dispatcher
+     */
+    public function proxyHasListener()
+    {
+        $this->eventDispatcher
+            ->expects($this->once())
+            ->method('hasListeners')
+            ->with('event.name')
+            ->will($this->returnValue(true))
+        ;
+
+        $this->assertTrue($this->bandDispatcher->hasListeners('event.name'));
     }
 }

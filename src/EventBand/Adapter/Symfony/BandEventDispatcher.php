@@ -10,13 +10,14 @@ use EventBand\Event;
 use EventBand\Subscription;
 use Symfony\Component\EventDispatcher\Event as SymfonyEvent;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
  * Class BandEventDispatcher
  *
  * @author Kirill chEbba Chebunin <iam@chebba.org>
  */
-class BandEventDispatcher implements BandDispatcher
+class BandEventDispatcher implements EventDispatcherInterface, BandDispatcher
 {
     const DEFAULT_BAND_PREFIX = '__event_band__';
 
@@ -47,18 +48,54 @@ class BandEventDispatcher implements BandDispatcher
     /**
      * {@inheritDoc}
      */
-    public function subscribe(Subscription $subscription, $priority = 0)
+    public function dispatch($eventName, SymfonyEvent $event = null)
     {
-        if ($this->subscriptions->contains($subscription)) {
-            return;
+        if ($event === null) {
+            $event = new SymfonyBandEvent();
         }
 
-        $eventName = $this->getSubscriptionName($subscription);
+        return $this->eventDispatcher->dispatch($eventName, $event);
+    }
 
-        $listener = new AdapterEventListener($this, $subscription);
-        $this->subscriptions->attach($subscription, $listener);
+    /**
+     * {@inheritDoc}
+     */
+    public function subscribe(Subscription $subscription, $priority = 0)
+    {
+        $this->attachListener($subscription, new AdapterEventListener($this, $subscription), $priority);
+    }
 
-        $this->eventDispatcher->addListener($eventName, $listener, $priority);
+    /**
+     * {@inheritDoc}
+     */
+    public function addListener($eventName, $listener, $priority = 0)
+    {
+        $this->attachListener(new ListenerSubscription($eventName, $listener, $this->eventDispatcher), $listener, $priority);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function addSubscriber(EventSubscriberInterface $subscriber)
+    {
+        // Copy-Pasted from EventDispatcher::addSubscriber() to ensure addListener() call
+        foreach ($subscriber->getSubscribedEvents() as $eventName => $params) {
+            if (is_string($params)) {
+                $this->addListener($eventName, array($subscriber, $params));
+            } elseif (is_string($params[0])) {
+                $this->addListener($eventName, array($subscriber, $params[0]), isset($params[1]) ? $params[1] : 0);
+            } else {
+                foreach ($params as $listener) {
+                    $this->addListener($eventName, array($subscriber, $listener[0]), isset($listener[1]) ? $listener[1] : 0);
+                }
+            }
+        }
+    }
+
+    protected function attachListener(Subscription $subscription, callable $listener, $priority)
+    {
+        $this->subscriptions->attach($subscription, [$listener, $priority]);
+        $this->eventDispatcher->addListener($this->getSubscriptionEventName($subscription), $listener, $priority);
     }
 
     /**
@@ -67,9 +104,90 @@ class BandEventDispatcher implements BandDispatcher
     public function unsubscribe(Subscription $subscription)
     {
         if ($this->subscriptions->contains($subscription)) {
-            $this->eventDispatcher->removeListener($this->getSubscriptionName($subscription),$this->subscriptions->offsetGet($subscription));
+            $this->eventDispatcher->removeListener($this->getSubscriptionEventName($subscription),$this->subscriptions->offsetGet($subscription)[0]);
             $this->subscriptions->detach($subscription);
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function removeListener($eventName, $listener)
+    {
+        if ($subscription = $this->findListenerSubscription($listener)) {
+            $this->unsubscribe($subscription);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function removeSubscriber(EventSubscriberInterface $subscriber)
+    {
+        // Copy-Pasted from EventDispatcher::removeSubscriber() to ensure removeListener() call
+        foreach ($subscriber->getSubscribedEvents() as $eventName => $params) {
+            if (is_array($params) && is_array($params[0])) {
+                foreach ($params as $listener) {
+                    $this->removeListener($eventName, array($subscriber, $listener[0]));
+                }
+            } else {
+                $this->removeListener($eventName, array($subscriber, is_string($params) ? $params : $params[0]));
+            }
+        }
+    }
+
+    /**
+     * @param callable $listener
+     *
+     * @return Subscription|null
+     */
+    protected function findListenerSubscription(callable $listener)
+    {
+        foreach ($this->subscriptions as $subscription) {
+            if ($this->subscriptions->getInfo()[0] === $listener) {
+                return $subscription;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getSubscriptions()
+    {
+        // TODO: sync with internal
+        return new \ArrayIterator(iterator_to_array($this->subscriptions));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getListeners($eventName = null)
+    {
+        return $this->eventDispatcher->getListeners($eventName);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getSubscriptionPriority(Subscription $subscription)
+    {
+        // TODO: sync with internal
+        if (!$this->subscriptions->contains($subscription)) {
+            throw new \OutOfBoundsException('Subscription does not exists');
+        }
+
+        return $this->subscriptions->offsetGet($subscription)[1];
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function hasListeners($eventName = null)
+    {
+        return $this->eventDispatcher->hasListeners($eventName);
     }
 
     private function getBandEventName($eventName, $band)
@@ -81,7 +199,7 @@ class BandEventDispatcher implements BandDispatcher
         return $eventName;
     }
 
-    private function getSubscriptionName(Subscription $subscription)
+    private function getSubscriptionEventName(Subscription $subscription)
     {
         return $this->getBandEventName($subscription->getEventName(), $subscription->getBand());
     }
