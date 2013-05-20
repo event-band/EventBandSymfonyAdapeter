@@ -96,7 +96,7 @@ class BandEventDispatcher implements EventDispatcherInterface, BandDispatcher
     protected function attachListener(Subscription $subscription, callable $listener, $priority)
     {
         $this->subscriptions->attach($subscription, [$listener, $priority]);
-        $this->eventDispatcher->addListener($this->getSubscriptionName($subscription), $listener, $priority);
+        $this->eventDispatcher->addListener($this->getSubscriptionEventName($subscription), $listener, $priority);
     }
 
     /**
@@ -105,7 +105,7 @@ class BandEventDispatcher implements EventDispatcherInterface, BandDispatcher
     public function unsubscribe(Subscription $subscription)
     {
         if ($this->subscriptions->contains($subscription)) {
-            $this->eventDispatcher->removeListener($this->getSubscriptionName($subscription),$this->subscriptions->offsetGet($subscription)[0]);
+            $this->eventDispatcher->removeListener($this->getSubscriptionEventName($subscription),$this->subscriptions->offsetGet($subscription)[0]);
             $this->subscriptions->detach($subscription);
         }
     }
@@ -200,7 +200,7 @@ class BandEventDispatcher implements EventDispatcherInterface, BandDispatcher
         return $eventName;
     }
 
-    private function getSubscriptionName(Subscription $subscription)
+    private function getSubscriptionEventName(Subscription $subscription)
     {
         return $this->getBandEventName($subscription->getEventName(), $subscription->getBand());
     }
