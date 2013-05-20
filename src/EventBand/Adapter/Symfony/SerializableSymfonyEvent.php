@@ -31,6 +31,8 @@ class SerializableSymfonyEvent extends SymfonyEvent implements \Serializable
         if (!is_array($data)) {
             throw new \RuntimeException(sprintf('Unserialized data is not an array but "%s"', $data));
         }
+
+        $this->fromUnserializedArray($data);
     }
 
     protected function toSerializableArray()
@@ -42,7 +44,7 @@ class SerializableSymfonyEvent extends SymfonyEvent implements \Serializable
 
     protected function fromUnserializedArray(array $data)
     {
-        if (isset($data['name'])) {
+        if (!isset($data['name'])) {
             throw new \RuntimeException('Key "name" is not set in unserialized array');
         }
 

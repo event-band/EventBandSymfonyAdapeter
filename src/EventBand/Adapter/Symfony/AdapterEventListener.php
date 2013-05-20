@@ -28,7 +28,6 @@ class AdapterEventListener
 
     public function __invoke(SymfonyEvent $symfonyEvent)
     {
-
         if ($symfonyEvent instanceof Event) {
             $event = $symfonyEvent;
         } elseif ($symfonyEvent instanceof SymfonyEventWrapper) {
