@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "e55e37049530d81abefeb9ae0e0ce935",
+    "hash": "b375d1867461bcaea1adb161ec6e0724",
     "packages": [
         {
             "name": "che/console-signals",
@@ -268,62 +268,17 @@
     ],
     "packages-dev": [
         {
-            "name": "jmikola/wildcard-event-dispatcher",
-            "version": "v1.0.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/jmikola/WildcardEventDispatcher.git",
-                "reference": "v1.0.1"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/jmikola/WildcardEventDispatcher/zipball/v1.0.1",
-                "reference": "v1.0.1",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.3.2",
-                "symfony/event-dispatcher": ">=2.0.0,<2.3-dev"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-0": {
-                    "Jmikola": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Jeremy Mikola",
-                    "email": "jmikola@gmail.com",
-                    "homepage": "http://jmikola.net"
-                }
-            ],
-            "description": "Event dispatcher with support for wildcard patterns inspired by AMQP topic exchanges.",
-            "homepage": "https://github.com/jmikola/WildcardEventDispatcher",
-            "keywords": [
-                "AMQP",
-                "dispatcher",
-                "event",
-                "event dispatcher"
-            ],
-            "time": "2013-02-26 19:21:37"
-        },
-        {
             "name": "phpunit/php-code-coverage",
-            "version": "1.2.9",
+            "version": "1.2.10",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/php-code-coverage.git",
-                "reference": "1.2.9"
+                "reference": "1.2.10"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/1.2.9",
-                "reference": "1.2.9",
+                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/1.2.10",
+                "reference": "1.2.10",
                 "shasum": ""
             },
             "require": {
@@ -363,7 +318,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2013-02-26 18:55:56"
+            "time": "2013-05-13 05:49:10"
         },
         {
             "name": "phpunit/php-file-iterator",
