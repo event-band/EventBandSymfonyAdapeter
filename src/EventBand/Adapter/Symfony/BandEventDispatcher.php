@@ -190,6 +190,23 @@ class BandEventDispatcher implements EventDispatcherInterface, BandDispatcher
         return $this->eventDispatcher->hasListeners($eventName);
     }
 
+    /**
+     * Proxy undefined methods to internal dispatcher
+     *
+     * @param string $name
+     * @param array $arguments
+     *
+     * @return mixed
+     */
+    public function __call($name, array $arguments)
+    {
+        if (!is_callable([$this->eventDispatcher, $name])) {
+            throw new \BadMethodCallException(sprintf('EventDispatcher does not have a "%s" method', $name));
+        }
+
+        return call_user_func_array([$this->eventDispatcher, $name], $arguments);
+    }
+
     private function getBandEventName($eventName, $band)
     {
         if (!empty($band)) {

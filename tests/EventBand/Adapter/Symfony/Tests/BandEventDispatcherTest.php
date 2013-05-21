@@ -30,7 +30,8 @@ class BandEventDispatcherTest extends TestCase
 
     protected function setUp()
     {
-        $this->eventDispatcher = $this->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
+        $eventDispatcherInterface = 'Symfony\Component\EventDispatcher\EventDispatcherInterface';
+        $this->eventDispatcher = $this->getMock($eventDispatcherInterface, array_merge(get_class_methods($eventDispatcherInterface), ['additionalMethod']));
         $this->bandDispatcher = new BandEventDispatcher($this->eventDispatcher, '~prefix~');
     }
 
@@ -237,5 +238,29 @@ class BandEventDispatcherTest extends TestCase
         ;
 
         $this->assertTrue($this->bandDispatcher->hasListeners('event.name'));
+    }
+
+    /**
+     * @test undefined methods are proxied to eventDispatcher with __call()
+     */
+    public function proxyMethods()
+    {
+        $this->eventDispatcher
+            ->expects($this->once())
+            ->method('additionalMethod')
+            ->with(1, 2, 3)
+            ->will($this->returnValue('result'))
+        ;
+
+        $this->assertEquals('result', $this->bandDispatcher->additionalMethod(1, 2, 3));
+    }
+
+    /**
+     * @test if no such method exists in eventDispatcher, exception it thrown
+     * @expectedException \BadMethodCallException
+     */
+    public function undefinedProxyMethod()
+    {
+        $this->bandDispatcher->undefinedMethod();
     }
 }
