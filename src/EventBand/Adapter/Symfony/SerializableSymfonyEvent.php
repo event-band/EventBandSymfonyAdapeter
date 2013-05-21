@@ -5,6 +5,7 @@
 
 namespace EventBand\Adapter\Symfony;
 
+use EventBand\Event;
 use Symfony\Component\EventDispatcher\Event as SymfonyEvent;
 
 /**
@@ -12,7 +13,7 @@ use Symfony\Component\EventDispatcher\Event as SymfonyEvent;
  *
  * @author Kirill chEbba Chebunin <iam@chebba.org>
  */
-class SerializableSymfonyEvent extends SymfonyEvent implements \Serializable
+class SerializableSymfonyEvent extends SymfonyEvent implements Event, \Serializable
 {
     /**
      * {@inheritDoc}
