@@ -61,12 +61,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/chEbba/EventBand.git",
-                "reference": "be1450df870de6deb8b91f84b03680d66a1ac832"
+                "reference": "eb0f704365742028626edea44455fcc79cbdfc95"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/chEbba/EventBand/zipball/be1450df870de6deb8b91f84b03680d66a1ac832",
-                "reference": "be1450df870de6deb8b91f84b03680d66a1ac832",
+                "url": "https://api.github.com/repos/chEbba/EventBand/zipball/eb0f704365742028626edea44455fcc79cbdfc95",
+                "reference": "eb0f704365742028626edea44455fcc79cbdfc95",
                 "shasum": ""
             },
             "require": {
@@ -104,7 +104,7 @@
                 "message",
                 "queue"
             ],
-            "time": "2013-05-17 15:17:50"
+            "time": "2013-05-27 15:26:34"
         },
         {
             "name": "symfony/console",
