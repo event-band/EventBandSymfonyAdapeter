@@ -3,7 +3,7 @@
  * @LICENSE_TEXT
  */
 
-namespace EventBand\Command;
+namespace EventBand\Adapter\Symfony\Command;
 
 use EventBand\Transport\TransportConfigurator;
 use Symfony\Component\Console\Command\Command;
