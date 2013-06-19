@@ -13,7 +13,7 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
- * Class BandEventDispatcher
+ * BandDispatcher implementation based on symfony EventDispatcher
  *
  * @author Kirill chEbba Chebunin <iam@chebba.org>
  */
@@ -21,13 +21,13 @@ class BandEventDispatcher implements EventDispatcherInterface, BandDispatcher
 {
     const DEFAULT_BAND_PREFIX = '__event_band__';
 
-    private $eventDispatcher;
+    private $dispatcher;
     private $bandPrefix;
     private $subscriptions;
 
-    public function __construct(EventDispatcherInterface $eventDispatcher, $bandPrefix = self::DEFAULT_BAND_PREFIX)
+    public function __construct(EventDispatcherInterface $dispatcher, $bandPrefix = self::DEFAULT_BAND_PREFIX)
     {
-        $this->eventDispatcher = $eventDispatcher;
+        $this->dispatcher = $dispatcher;
         $this->bandPrefix = $bandPrefix;
         $this->subscriptions = new \SplObjectStorage();
     }
@@ -40,7 +40,7 @@ class BandEventDispatcher implements EventDispatcherInterface, BandDispatcher
         $eventName = $this->getBandEventName($event->getName(), $band);
 
         $symfonyEvent = $event instanceof SymfonyEvent ? $event : new SymfonyEventWrapper($event);
-        $this->eventDispatcher->dispatch($eventName, $symfonyEvent);
+        $this->dispatcher->dispatch($eventName, $symfonyEvent);
 
         return !$symfonyEvent->isPropagationStopped();
     }
@@ -54,7 +54,7 @@ class BandEventDispatcher implements EventDispatcherInterface, BandDispatcher
             $event = new SerializableSymfonyEvent();
         }
 
-        return $this->eventDispatcher->dispatch($eventName, $event);
+        return $this->dispatcher->dispatch($eventName, $event);
     }
 
     /**
@@ -70,7 +70,7 @@ class BandEventDispatcher implements EventDispatcherInterface, BandDispatcher
      */
     public function addListener($eventName, $listener, $priority = 0)
     {
-        $this->attachListener(new ListenerSubscription($eventName, $listener, $this->eventDispatcher), $listener, $priority);
+        $this->attachListener(new ListenerSubscription($eventName, $listener, $this->dispatcher), $listener, $priority);
     }
 
     /**
@@ -95,7 +95,7 @@ class BandEventDispatcher implements EventDispatcherInterface, BandDispatcher
     protected function attachListener(Subscription $subscription, callable $listener, $priority)
     {
         $this->subscriptions->attach($subscription, [$listener, $priority]);
-        $this->eventDispatcher->addListener($this->getSubscriptionEventName($subscription), $listener, $priority);
+        $this->dispatcher->addListener($this->getSubscriptionEventName($subscription), $listener, $priority);
     }
 
     /**
@@ -104,7 +104,7 @@ class BandEventDispatcher implements EventDispatcherInterface, BandDispatcher
     public function unsubscribe(Subscription $subscription)
     {
         if ($this->subscriptions->contains($subscription)) {
-            $this->eventDispatcher->removeListener($this->getSubscriptionEventName($subscription),$this->subscriptions->offsetGet($subscription)[0]);
+            $this->dispatcher->removeListener($this->getSubscriptionEventName($subscription),$this->subscriptions->offsetGet($subscription)[0]);
             $this->subscriptions->detach($subscription);
         }
     }
@@ -116,6 +116,8 @@ class BandEventDispatcher implements EventDispatcherInterface, BandDispatcher
     {
         if ($subscription = $this->findListenerSubscription($listener)) {
             $this->unsubscribe($subscription);
+        } else {
+            $this->dispatcher->removeListener($eventName, $listener);
         }
     }
 
@@ -166,7 +168,7 @@ class BandEventDispatcher implements EventDispatcherInterface, BandDispatcher
      */
     public function getListeners($eventName = null)
     {
-        return $this->eventDispatcher->getListeners($eventName);
+        return $this->dispatcher->getListeners($eventName);
     }
 
     /**
@@ -187,7 +189,7 @@ class BandEventDispatcher implements EventDispatcherInterface, BandDispatcher
      */
     public function hasListeners($eventName = null)
     {
-        return $this->eventDispatcher->hasListeners($eventName);
+        return $this->dispatcher->hasListeners($eventName);
     }
 
     /**
@@ -200,11 +202,11 @@ class BandEventDispatcher implements EventDispatcherInterface, BandDispatcher
      */
     public function __call($name, array $arguments)
     {
-        if (!is_callable([$this->eventDispatcher, $name])) {
+        if (!is_callable([$this->dispatcher, $name])) {
             throw new \BadMethodCallException(sprintf('EventDispatcher does not have a "%s" method', $name));
         }
 
-        return call_user_func_array([$this->eventDispatcher, $name], $arguments);
+        return call_user_func_array([$this->dispatcher, $name], $arguments);
     }
 
     private function getBandEventName($eventName, $band)

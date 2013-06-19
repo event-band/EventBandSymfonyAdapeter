@@ -155,6 +155,46 @@ class BandEventDispatcherTest extends TestCase
     }
 
     /**
+     * @test add/removeListener calls internal dispatcher
+     */
+    public function addRemoveListener()
+    {
+        $callback = 'var_dump';
+
+        $this->eventDispatcher
+            ->expects($this->once())
+            ->method('addListener')
+            ->with('event.name', $callback, 1024)
+        ;
+
+        $this->bandDispatcher->addListener('event.name', $callback, 1024);
+
+        $this->eventDispatcher
+            ->expects($this->once())
+            ->method('removeListener')
+            ->with('event.name', $callback)
+        ;
+
+        $this->bandDispatcher->removeListener('event.name', $callback);
+    }
+
+    /**
+     * @test if removeListener called without addListener through same object it should still call internal remove
+     */
+    public function removeNotSubscribedListener()
+    {
+        $callback = 'var_dump';
+
+        $this->eventDispatcher
+            ->expects($this->once())
+            ->method('removeListener')
+            ->with('event.name', $callback)
+        ;
+
+        $this->bandDispatcher->removeListener('event.name', $callback);
+    }
+
+    /**
      * @test getSubscriptions returns iterator with subscriptions
      */
     public function subscriptionIterator()
