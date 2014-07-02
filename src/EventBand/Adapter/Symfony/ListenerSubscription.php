@@ -45,10 +45,9 @@ class ListenerSubscription extends AbstractSubscription
     public function dispatch(Event $event, BandDispatcher $dispatcher)
     {
         $symfonyEvent = $event instanceof SymfonyEvent ? $event : new SymfonyEventWrapper($event);
-        // TODO: setDispatcher expects EventDispatcher and not an interface
-        $symfonyEvent->setDispatcher($this->eventDispatcher);
+        $symfonyEvent->setDispatcher($this->getEventDispatcher());
 
-        call_user_func($this->listener, $symfonyEvent);
+        call_user_func($this->listener, $symfonyEvent, $this->getEventName(), $this->getEventDispatcher());
 
         return !$symfonyEvent->isPropagationStopped();
     }
