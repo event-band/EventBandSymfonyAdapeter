@@ -53,6 +53,7 @@ class BandEventDispatcher implements EventDispatcherInterface, BandDispatcher
         if ($event === null) {
             $event = new SerializableSymfonyEvent();
         }
+        $event->setName($eventName);
 
         return $this->dispatcher->dispatch($eventName, $event);
     }
