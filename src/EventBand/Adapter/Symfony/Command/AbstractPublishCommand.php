@@ -2,6 +2,8 @@
 
 namespace EventBand\Command;
 
+use EventBand\Event;
+use EventBand\Transport\PublishEventException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -22,7 +24,7 @@ abstract class AbstractPublishCommand extends Command
     /**
      * @param InputInterface $input
      *
-     * @return \Symfony\Component\EventDispatcher\Event
+     * @return Event
      */
     abstract protected function createEvent(InputInterface $input);
 
@@ -43,9 +45,14 @@ abstract class AbstractPublishCommand extends Command
     {
         for ($i = 0; $i < $input->getOption('count'); $i++) {
             $event = $this->createEvent($input);
-            $this->getPublisher()->publishEvent($event);
+            try {
+                $this->getPublisher()->publishEvent($event);
 
-            $output->writeln(sprintf('Event #%d was published: "%s".', $i+1, $event->getName()));
+                $output->writeln(sprintf('Event #%d was published: "%s".', $i + 1, $event->getName()));
+            }catch (PublishEventException $e){
+                $output->writeln(sprintf('Event #%d was not published', $i + 1));
+                throw $e;
+            }
         }
     }
 }

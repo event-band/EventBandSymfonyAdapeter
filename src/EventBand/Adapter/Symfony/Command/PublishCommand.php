@@ -2,10 +2,10 @@
 
 namespace EventBand\Command;
 
+use EventBand\Adapter\Symfony\SerializableSymfonyEvent;
 use EventBand\Transport\EventPublisher;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\EventDispatcher\Event;
 
 /**
  * Description of PublishCommand
@@ -44,7 +44,7 @@ class PublishCommand extends AbstractPublishCommand
      */
     protected function createEvent(InputInterface $input)
     {
-        $event = new Event();
+        $event = new SerializableSymfonyEvent();
         $event->setName($input->getArgument('name'));
 
         return $event;
