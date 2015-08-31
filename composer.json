@@ -19,15 +19,18 @@
 
     "require": {
         "php": ">= 5.4",
+
         "event-band/band-framework": "dev-master",
+
         "symfony/event-dispatcher": "2.*, >= 2.1.0",
         "symfony/console": "2.*, >= 2.1.0",
+
         "che/console-signals": "dev-master"
     },
 
     "require-dev": {
         "phpunit/phpunit": "3.7.*",
         "symfony/event-dispatcher": "2.1.0",
-        "symfony/console": "2.1.0"
+        "symfony/console": "2.*"
     }
 }
