@@ -20,12 +20,12 @@
     "require": {
         "php": ">=5.4",
 
+        "che/console-signals": "~1.0",
+
         "event-band/band-framework": "~1.0",
 
         "symfony/event-dispatcher": "2.*, >= 2.1.0",
-        "symfony/console": "2.*, >= 2.1.0",
-
-        "che/console-signals": "dev-master"
+        "symfony/console": "2.*, >= 2.1.0"
     },
 
     "require-dev": {
