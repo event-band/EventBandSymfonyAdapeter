@@ -21,7 +21,6 @@ class SerializableSymfonyEventTest extends TestCase
     public function serializeWithArray()
     {
         $event = new SerializableEventStub('event.name', 'data');
-        $event->setDispatcher($this->getMock('Symfony\Component\EventDispatcher\EventDispatcher'));
 
         $serialized = serialize($event);
 
@@ -31,6 +30,5 @@ class SerializableSymfonyEventTest extends TestCase
 
         $this->assertEquals('event.name', $unserialized->getName());
         $this->assertEquals('data', $unserialized->getFoo());
-        $this->assertNull($unserialized->getDispatcher());
     }
 }

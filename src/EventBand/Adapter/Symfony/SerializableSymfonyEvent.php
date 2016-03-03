@@ -16,6 +16,27 @@ use Symfony\Component\EventDispatcher\Event as SymfonyEvent;
 class SerializableSymfonyEvent extends SymfonyEvent implements Event, \Serializable
 {
     /**
+     * @var string
+     */
+    private $name;
+
+    /**
+     * @param string $name
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
      * {@inheritDoc}
      */
     public function serialize()
