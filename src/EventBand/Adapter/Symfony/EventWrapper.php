@@ -16,10 +16,18 @@ use Symfony\Component\EventDispatcher\Event as SymfonyEvent;
 class EventWrapper implements Event
 {
     private $symfonyEvent;
+    private $name;
 
-    public function __construct(SymfonyEvent $symfonyEvent)
+    /**
+     * Wrap symfony event
+     *
+     * @param SymfonyEvent  $symfonyEvent
+     * @param string|null   $name
+     */
+    public function __construct(SymfonyEvent $symfonyEvent, $name = null)
     {
         $this->symfonyEvent = $symfonyEvent;
+        $this->name = $name;
     }
 
     /**
@@ -27,6 +35,6 @@ class EventWrapper implements Event
      */
     public function getName()
     {
-        return $this->symfonyEvent->getName();
+        return $this->name !== null ? $this->name : $this->symfonyEvent->getName();
     }
 }
