@@ -7,6 +7,7 @@ namespace EventBand\Adapter\Symfony\Command;
 
 use EventBand\Transport\TransportConfigurator;
 use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputOption;
 
 /**
  * Class SetupCommand
@@ -24,6 +25,7 @@ class SetupCommand extends AbstractSetupCommand
             ->setName('setup')
             ->addArgument('name', InputArgument::OPTIONAL)
         ;
+        parent::configure();
     }
 
     public function setConfigurator(TransportConfigurator $configurator)
