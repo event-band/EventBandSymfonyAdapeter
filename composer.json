@@ -22,7 +22,7 @@
 
         "che/console-signals": "~1.0",
 
-        "event-band/band-framework": "~1.0",
+        "event-band/band-framework": "~1.1.0",
 
         "symfony/event-dispatcher": "~2.1.0 || ~3.0",
         "symfony/console": "~2.1.0 || ~3.0"
