@@ -8,6 +8,7 @@ namespace EventBand\Adapter\Symfony\Command;
 use Che\ConsoleSignals\SignaledCommand;
 use EventBand\BandDispatcher;
 use EventBand\CallbackSubscription;
+use EventBand\EventLimiter;
 use EventBand\Processor\DispatchProcessor;
 use EventBand\Processor\DispatchStopEvent;
 use EventBand\Processor\DispatchTimeoutEvent;
@@ -77,15 +78,23 @@ abstract class AbstractDispatchCommand extends SignaledCommand
     {
         $dispatcher = $this->getDispatcher();
 
-         $events = $input->getOption('events');
+
          $time = $input->getOption('time');
         // TODO: configure limiters
-
         $signalCallback = function (StoppableDispatchEvent $event) {
             if (!$this->isActive()) {
                 $event->stopDispatching();
             }
         };
+
+        $events = $input->getOption('events');
+        if ($events) {
+            $limiter = new EventLimiter($events);
+            $limiterCallback = function (DispatchStopEvent $event) use ($limiter) {
+                $limiter->checkLimit($event);
+            };
+            $dispatcher->subscribe(new CallbackSubscription(DispatchStopEvent::name(), $limiterCallback));
+        }
 
         $dispatcher->subscribe(new CallbackSubscription(DispatchStopEvent::name(), $signalCallback));
         $dispatcher->subscribe(new CallbackSubscription(DispatchTimeoutEvent::name(), $signalCallback));
