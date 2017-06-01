@@ -5,8 +5,10 @@
 
 namespace EventBand\Adapter\Symfony\Tests;
 
+use EventBand\Adapter\Symfony\EventWrapper;
 use EventBand\Adapter\Symfony\SymfonyEventWrapper;
 use EventBand\Adapter\Symfony\AdapterEventListener;
+use EventBand\Event;
 use PHPUnit_Framework_TestCase as TestCase;
 
 /**
@@ -17,15 +19,15 @@ use PHPUnit_Framework_TestCase as TestCase;
 class AdapterEventListenerTest extends TestCase
 {
     /**
-     * @var \PHPUnit_Framework_MockObject_MockObject
+     * @var \PHPUnit_Framework_MockObject_MockObject|\EventBand\BandDispatcher
      */
     private $dispatcher;
     /**
-     * @var \PHPUnit_Framework_MockObject_MockObject
+     * @var \PHPUnit_Framework_MockObject_MockObject|\EventBand\Subscription
      */
     private $subscription;
     /**
-     * @var \PHPUnit_Framework_MockObject_MockObject
+     * @var \PHPUnit_Framework_MockObject_MockObject|\EventBand\Event
      */
     private $event;
     /**
@@ -81,5 +83,30 @@ class AdapterEventListenerTest extends TestCase
 
         call_user_func($this->listener, $wrapper);
         $this->assertTrue($wrapper->isPropagationStopped());
+    }
+
+    /**
+     * @test event name is passed with wrapped event
+     */
+    public function symfonyEventName()
+    {
+        $symfonyEvent = $this->getMock('Symfony\Component\EventDispatcher\Event');
+
+        $eventName = 'event_name';
+        $this->subscription
+            ->expects($this->any())
+            ->method('getEventName')
+            ->will($this->returnValue($eventName));
+
+        $this->subscription
+            ->expects($this->once())
+            ->method('dispatch')
+            ->with($this->callback(function (Event $e) use ($eventName) {
+                return $e->getName() == $eventName;
+            }))
+            ->will($this->returnValue(true))
+        ;
+
+        call_user_func($this->listener, $symfonyEvent);
     }
 }
