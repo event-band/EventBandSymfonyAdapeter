@@ -95,7 +95,7 @@ class BandEventDispatcher implements EventDispatcherInterface, BandDispatcher
         }
     }
 
-    protected function attachListener(Subscription $subscription, callable $listener, $priority)
+    protected function attachListener(Subscription $subscription, $listener, $priority)
     {
         $this->subscriptions->attach($subscription, [$listener, $priority]);
         $this->dispatcher->addListener($this->getSubscriptionEventName($subscription), $listener, $priority);
@@ -146,7 +146,7 @@ class BandEventDispatcher implements EventDispatcherInterface, BandDispatcher
      *
      * @return Subscription|null
      */
-    protected function findListenerSubscription(callable $listener)
+    protected function findListenerSubscription($listener)
     {
         foreach ($this->subscriptions as $subscription) {
             if ($this->subscriptions->getInfo()[0] === $listener) {
