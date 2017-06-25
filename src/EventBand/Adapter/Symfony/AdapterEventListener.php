@@ -33,7 +33,7 @@ class AdapterEventListener
         } elseif ($symfonyEvent instanceof SymfonyEventWrapper) {
             $event = $symfonyEvent->getWrappedEvent();
         } else {
-            $event = new EventWrapper($symfonyEvent);
+            $event = new EventWrapper($symfonyEvent, $this->subscription->getEventName());
         }
 
         if (!$this->subscription->dispatch($event, $this->dispatcher)) {

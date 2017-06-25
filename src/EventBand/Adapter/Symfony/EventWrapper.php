@@ -31,28 +31,21 @@ class EventWrapper implements Event
     private $symfonyEvent;
 
     /**
-     * @param SymfonyEvent $symfonyEvent
+     * Wrap symfony event
+     *
+     * @param SymfonyEvent  $symfonyEvent
+     * @param string|null   $name
      */
-    public function __construct(SymfonyEvent $symfonyEvent)
+    public function __construct(SymfonyEvent $symfonyEvent, $name = null)
     {
         $this->symfonyEvent = $symfonyEvent;
+        $this->name = $name;
     }
     /**
      * @return string
      */
     public function getName()
     {
-        return $this->name;
-    }
-    /**
-     * @param string $name
-     *
-     * @return self
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
-
-        return $this;
+        return $this->name !== null ? $this->name : $this->symfonyEvent->getName();
     }
 }
