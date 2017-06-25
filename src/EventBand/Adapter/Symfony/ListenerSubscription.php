@@ -12,8 +12,6 @@ use Symfony\Component\EventDispatcher\Event as SymfonyEvent;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
- * Class SymfonySubscription
- *
  * @author Kirill chEbba Chebunin <iam@chebba.org>
  */
 class ListenerSubscription extends AbstractSubscription
@@ -21,7 +19,7 @@ class ListenerSubscription extends AbstractSubscription
     private $listener;
     private $eventDispatcher;
 
-    public function __construct($eventName, callable $listener, EventDispatcherInterface $eventDispatcher, $band = null)
+    public function __construct($eventName, $listener, EventDispatcherInterface $eventDispatcher, $band = null)
     {
         $this->listener = $listener;
         $this->eventDispatcher = $eventDispatcher;
@@ -44,6 +42,7 @@ class ListenerSubscription extends AbstractSubscription
      */
     public function dispatch(Event $event, BandDispatcher $dispatcher)
     {
+//        if (method_exists($event, 'getName'))
         $symfonyEvent = $event instanceof SymfonyEvent ? $event : new SymfonyEventWrapper($event);
 
         call_user_func($this->listener, $symfonyEvent, $this->getEventName(), $this->getEventDispatcher());
