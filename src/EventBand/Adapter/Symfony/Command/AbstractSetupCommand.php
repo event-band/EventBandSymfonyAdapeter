@@ -8,6 +8,7 @@ namespace EventBand\Adapter\Symfony\Command;
 use EventBand\Transport\TransportConfigurator;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
@@ -17,6 +18,11 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 abstract class AbstractSetupCommand extends Command
 {
+    protected function configure()
+    {
+        $this->addOption('reset', 'r', InputOption::VALUE_NONE, 'Reset definitions before setting up');
+    }
+
     /**
      * @return TransportConfigurator
      */
@@ -30,6 +36,6 @@ abstract class AbstractSetupCommand extends Command
 
         $definition = $this->getConfigurationDefinition($options);
 
-        $this->getConfigurator()->setUpDefinition($definition);
+        $this->getConfigurator()->setUpDefinition($definition, $input->getOption('reset'));
     }
 }

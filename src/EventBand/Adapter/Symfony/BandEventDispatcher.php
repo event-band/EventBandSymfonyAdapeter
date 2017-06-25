@@ -186,6 +186,14 @@ class BandEventDispatcher implements EventDispatcherInterface, BandDispatcher
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function getListenerPriority($eventName, $listener)
+    {
+        return $this->dispatcher->getListenerPriority($eventName, $listener);
+    }
+
+    /**
      * {@inheritDoc}
      */
     public function hasListeners($eventName = null)
